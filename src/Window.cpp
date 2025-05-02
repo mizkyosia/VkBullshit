@@ -61,7 +61,7 @@ Window::Window(const std::string appName, const glm::ivec2 size, const char *eng
         throw std::runtime_error("Failed to create instance!");
     }
 
-    std::cout << "Successfully created Vulkan instance" << std::endl;
+    std::cout << "Successfully created Vulkan instance" << '\n';
 
     // ------------------------------- CREATE GLFW WINDOWS
     _window = glfwCreateWindow(size.x, size.y, "Vulkan", nullptr, nullptr);
@@ -121,8 +121,8 @@ bool Window::CheckValidationLayerSupport()
     std::vector<VkLayerProperties> availableLayers(layerCount);
     vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-    std::cout << std::endl
-              << "Available layers : " << layerCount << ", layers to check : " << ValidationLayers.size() << std::endl;
+    std::cout << '\n'
+              << "Available layers : " << layerCount << ", layers to check : " << ValidationLayers.size() << '\n';
 
     for (const char *layerName : Window::ValidationLayers)
     {
@@ -141,11 +141,11 @@ bool Window::CheckValidationLayerSupport()
 
         if (!layerFound)
             return false;
-        std::cout << "OK" << std::endl;
+        std::cout << "OK" << '\n';
     }
 
-    std::cout << "All layers passed !" << std::endl
-              << std::endl;
+    std::cout << "All layers passed !" << '\n'
+              << '\n';
 
     return true;
 }

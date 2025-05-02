@@ -1,6 +1,6 @@
 # Well hello there
 
-I had this random idea at like 1:30 AM, "Wouldn't it be fun if I tried to learn Vulkan ?"
+It was around like 1:30AM when I asked myself, "Wouldn't it be fun if I tried to learn Vulkan ?"
 
 I'll let you guess the answer
 

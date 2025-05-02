@@ -6,3 +6,5 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
+
+#define SHADERS_PATH "../assets/shaders/"

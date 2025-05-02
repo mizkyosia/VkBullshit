@@ -12,7 +12,8 @@ void SwapChain::createSwapChain()
     _supportDetails = QuerySwapChainSupport(_device.physical(), _window.surface());
     VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(_supportDetails.formats);
     VkPresentModeKHR presentMode = ChooseSwapPresentMode(_supportDetails.presentModes);
-    VkExtent2D extent = ChooseSwapExtent(_supportDetails.capabilities, _window);
+    _extent = ChooseSwapExtent(_supportDetails.capabilities, _window);
+    _imageFormat = surfaceFormat.format;
 
     // 1 more image than the minimum is usually enough to not have too much wait time, while keeping a light enough load
     uint32_t imageCount = _supportDetails.capabilities.minImageCount + 1;
@@ -32,7 +33,7 @@ void SwapChain::createSwapChain()
     // We re-use our fetched & calculated data
     createInfo.imageFormat = surfaceFormat.format;
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
-    createInfo.imageExtent = extent;
+    createInfo.imageExtent = _extent;
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
@@ -70,7 +71,59 @@ void SwapChain::createSwapChain()
     if (vkCreateSwapchainKHR(_device.logical(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
         throw std::runtime_error("Failed to create swap chain!");
 
-    std::cout << "Successfully created swapchain" << std::endl;
+    std::cout << "Successfully created swapchain" << '\n';
+
+    // Get swap chain images
+    vkGetSwapchainImagesKHR(_device.logical(), _swapChain, &imageCount, nullptr);
+    _images.resize(imageCount);
+    vkGetSwapchainImagesKHR(_device.logical(), _swapChain, &imageCount, _images.data());
+}
+
+void SwapChain::createImageViews()
+{
+    // Resize to the number of images only
+    _imageViews.resize(_images.size());
+
+    // Now, create the actual images
+    for (size_t i = 0; i < _images.size(); i++)
+    {
+        VkImageViewCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        createInfo.image = _images[i];
+
+        // Type of the image :
+        // - 1D texture
+        // - 2D texture
+        // - 3D texture
+        // - Cubemap
+        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        createInfo.format = _imageFormat;
+
+        // Allows for tampering with color channels (monochrome effects etc.)
+        createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+        // No mipmapping or layers
+        createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        createInfo.subresourceRange.baseMipLevel = 0;
+        createInfo.subresourceRange.levelCount = 1;
+        createInfo.subresourceRange.baseArrayLayer = 0;
+        createInfo.subresourceRange.layerCount = 1;
+
+        if (vkCreateImageView(_device.logical(), &createInfo, nullptr, &_imageViews[i]) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create image views!");
+        }
+    }
+}
+
+void SwapChain::destroyImageViews()
+{
+    for (auto imageView : _imageViews) {
+        vkDestroyImageView(_device.logical(), imageView, nullptr);
+    }
 }
 
 VkSurfaceFormatKHR SwapChain::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats)

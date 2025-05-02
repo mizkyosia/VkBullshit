@@ -6,9 +6,11 @@ const uint32_t HEIGHT = 600;
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
 Application::Application(bool enableValidationLayers) : window("Test", {WIDTH, HEIGHT}, "Vulkan", enableValidationLayers),
-                             debugMessenger(window),
-                             device(window),
-                             swapChain(device, window)
+                                                        debugMessenger(window),
+                                                        device(window),
+                                                        swapChain(device, window),
+                                                        defaultRenderPass(device, swapChain),
+                                                        graphicsPipeline(device, swapChain, defaultRenderPass, {ShaderInfo("base", true), ShaderInfo("base", false)})
 {
 }
 
@@ -22,7 +24,9 @@ void Application::recreateSwapChain(bool &resized)
 
 void Application::run()
 {
+    std::cout << "Application started !\n";
     mainLoop();
+    std::cout << "Application closing...\n";
 }
 
 void Application::mainLoop()

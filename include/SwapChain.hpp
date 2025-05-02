@@ -41,7 +41,6 @@ private:
     static VkPresentModeKHR ChooseSwapPresentMode(
         const std::vector<VkPresentModeKHR> &availablePresentModes);
 
-
 public:
     explicit SwapChain(const Device &device, const Window &window);
     ~SwapChain();
@@ -49,22 +48,14 @@ public:
     void recreate();
     void cleanupOld();
 
-
     // Getters
     inline const VkSwapchainKHR &handle() const { return _swapChain; }
     inline const VkFormat &imageFormat() const { return _imageFormat; }
     inline const VkExtent2D &extent() const { return _extent; }
     inline size_t numImages() const { return _images.size(); }
     inline size_t numImageViews() const { return _imageViews.size(); }
-
-    inline const SwapChainSupportDetails &supportDetails() const
-    {
-        return _supportDetails;
-    }
-    inline VkImageView imageView(uint32_t index) const
-    {
-        return _imageViews[index];
-    }
+    inline const SwapChainSupportDetails &supportDetails() const { return _supportDetails; }
+    inline VkImageView imageView(uint32_t index) const { return _imageViews[index]; }
 
     static SwapChainSupportDetails
     QuerySwapChainSupport(const VkPhysicalDevice &device,
@@ -72,6 +63,4 @@ public:
     static VkExtent2D
     ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities,
                      const Window &window);
-
-
 };

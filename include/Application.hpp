@@ -5,6 +5,8 @@
 #include <Window.hpp>
 #include <Messenger.hpp>
 #include <SwapChain.hpp>
+#include <GraphicsPipeline.hpp>
+#include <RenderPass.hpp>
 
 class Application
 {
@@ -13,6 +15,8 @@ private:
     Messenger debugMessenger;
     Device device;
     SwapChain swapChain;
+    RenderPass defaultRenderPass;
+    GraphicsPipeline graphicsPipeline;
 
     size_t currentFrame = 0;
 

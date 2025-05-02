@@ -20,7 +20,7 @@ public:
         const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
         void *pUserData)
     {
-        std::cerr << "\tLayer message : " << pCallbackData->pMessage << std::endl;
+        std::cerr << "\tLayer message : " << pCallbackData->pMessage << '\n';
         return VK_FALSE;
     }
 
