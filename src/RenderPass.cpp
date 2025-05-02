@@ -32,6 +32,17 @@ void RenderPass::createRenderPass()
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachmentRef;
 
+    // Dependencies for the subpass
+    VkSubpassDependency dependency{};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    // Wait for swapchain to finish reading the image
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    // Set the waiting operations
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
     // Finally, create actual render pass
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
@@ -39,6 +50,9 @@ void RenderPass::createRenderPass()
     renderPassInfo.pAttachments = &colorAttachment;
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
+    // Add dependencies
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
 
     if (vkCreateRenderPass(_device.logical(), &renderPassInfo, nullptr, &_renderPass) != VK_SUCCESS)
     {
@@ -75,11 +89,12 @@ void RenderPass::destroyFrameBuffers()
         vkDestroyFramebuffer(_device.logical(), buffer, nullptr);
 }
 
-RenderPass::RenderPass(const Device &device, const SwapChain &swapChain) : _device(device),
-                                                                           _swapChain(swapChain),
-                                                                           _oldRenderPass(VK_NULL_HANDLE)
+RenderPass::RenderPass(const Device &device, const SwapChain &swapChain) : _oldRenderPass(VK_NULL_HANDLE),
+                                                                           _device(device),
+                                                                           _swapChain(swapChain)
 {
     createRenderPass();
+    createFrameBuffers();
 }
 
 RenderPass::~RenderPass()

@@ -89,6 +89,8 @@ void Window::mainLoop()
         glfwPollEvents();
         _drawFrameFunc(_resized);
     }
+
+    
 }
 
 std::vector<const char *> Window::getRequiredExtensions()

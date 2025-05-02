@@ -7,11 +7,11 @@
 #include <SwapChain.hpp>
 #include <RenderPass.hpp>
 
-GraphicsPipeline::GraphicsPipeline(const Device &device, const SwapChain &swapChain, const RenderPass &renderPass, const std::vector<ShaderInfo> shaders) : _device(device),
+GraphicsPipeline::GraphicsPipeline(const Device &device, const SwapChain &swapChain, const RenderPass &renderPass, const std::vector<ShaderInfo> shaders) : _oldLayout(VK_NULL_HANDLE),
+                                                                                                                                                            _device(device),
                                                                                                                                                             _swapChain(swapChain),
                                                                                                                                                             _renderPass(renderPass),
-                                                                                                                                                            _shaders(shaders),
-                                                                                                                                                            _oldLayout(VK_NULL_HANDLE)
+                                                                                                                                                            _shaders(shaders)
 {
     createPipeline();
 }
@@ -24,7 +24,6 @@ GraphicsPipeline::~GraphicsPipeline()
 
 void GraphicsPipeline::recreate()
 {
-    
 }
 
 void GraphicsPipeline::createPipeline()

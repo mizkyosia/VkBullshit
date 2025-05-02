@@ -158,6 +158,7 @@ VkPresentModeKHR SwapChain::ChooseSwapPresentMode(const std::vector<VkPresentMod
 SwapChain::SwapChain(const Device &device, const Window &window) : _device(device), _window(window), _oldSwapChain(VK_NULL_HANDLE)
 {
     createSwapChain();
+    createImageViews();
 }
 
 SwapChain::~SwapChain()

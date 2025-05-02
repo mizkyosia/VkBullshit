@@ -7,4 +7,6 @@ target_sources(VkBullshit PRIVATE
     SwapChain.cpp
     GraphicsPipeline.cpp
     RenderPass.cpp
+    CommandPool.cpp
+    Sync.cpp
 )

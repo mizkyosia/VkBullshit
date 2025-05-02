@@ -7,6 +7,8 @@
 #include <SwapChain.hpp>
 #include <GraphicsPipeline.hpp>
 #include <RenderPass.hpp>
+#include <CommandPool.hpp>
+#include <Sync.hpp>
 
 class Application
 {
@@ -17,6 +19,8 @@ private:
     SwapChain swapChain;
     RenderPass defaultRenderPass;
     GraphicsPipeline graphicsPipeline;
+    CommandPool commandPool;
+    Sync sync;
 
     size_t currentFrame = 0;
 
@@ -25,7 +29,7 @@ private:
     void drawFrame(bool &resized);
 
     void recreateSwapChain(bool &resized);
-
+    
 public:
     Application(bool enableValidationLayers);
 
