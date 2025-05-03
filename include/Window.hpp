@@ -5,6 +5,9 @@
 #include <functional>
 #include <cstring>
 
+// Forward declaration
+class Device;
+
 class Window
 {
 private:
@@ -37,7 +40,7 @@ public:
     ~Window();
 
     /// @brief Main loop of the window
-    void mainLoop();
+    void mainLoop(const Device& device);
 
     /// @brief Fetch required extensions for Vulkan
     std::vector<const char *> getRequiredExtensions();

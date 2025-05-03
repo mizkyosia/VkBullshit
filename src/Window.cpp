@@ -7,11 +7,10 @@ const std::vector<const char *> Window::ValidationLayers = {
 const std::vector<const char *> Window::DeviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-Window::Window(const std::string appName, const glm::ivec2 size, const char *engineName, const bool enableLayers) :
-            _title(appName),
-            _size(size),
-            _surface(VK_NULL_HANDLE),
-            _enableValidationLayers(enableLayers)
+Window::Window(const std::string appName, const glm::ivec2 size, const char *engineName, const bool enableLayers) : _title(appName),
+                                                                                                                    _size(size),
+                                                                                                                    _surface(VK_NULL_HANDLE),
+                                                                                                                    _enableValidationLayers(enableLayers)
 {
 
     // ------------------------- CREATE VULKAN INSTANCE ----------------------
@@ -82,7 +81,7 @@ Window::~Window()
     glfwDestroyWindow(_window);
 }
 
-void Window::mainLoop()
+void Window::mainLoop(const Device &device)
 {
     while (!glfwWindowShouldClose(_window))
     {
@@ -90,7 +89,8 @@ void Window::mainLoop()
         _drawFrameFunc(_resized);
     }
 
-    
+    vkDeviceWaitIdle(device.logical());
+    vkQueueWaitIdle(device.presentQueue());
 }
 
 std::vector<const char *> Window::getRequiredExtensions()

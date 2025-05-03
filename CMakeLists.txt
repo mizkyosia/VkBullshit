@@ -8,6 +8,9 @@ add_subdirectory(src)
 # Set compiler options
 target_compile_options(VkBullshit PRIVATE -Wall)
 
+# Add ImGui library
+add_subdirectory(lib/ImGui)
+
 # Find libraries
 find_package(Vulkan REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
@@ -15,4 +18,7 @@ find_package(glfw3 CONFIG REQUIRED)
 # Link libraries
 target_link_libraries(VkBullshit Vulkan::Vulkan)
 target_link_libraries(VkBullshit glfw)
+target_link_libraries(VkBullshit ImGui)
+
+# 
 target_include_directories(VkBullshit PRIVATE ${PROJECT_SOURCE_DIR}/include)

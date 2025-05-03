@@ -71,8 +71,6 @@ void SwapChain::createSwapChain()
     if (vkCreateSwapchainKHR(_device.logical(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
         throw std::runtime_error("Failed to create swap chain!");
 
-    std::cout << "Successfully created swapchain" << '\n';
-
     // Get swap chain images
     vkGetSwapchainImagesKHR(_device.logical(), _swapChain, &imageCount, nullptr);
     _images.resize(imageCount);
@@ -121,7 +119,8 @@ void SwapChain::createImageViews()
 
 void SwapChain::destroyImageViews()
 {
-    for (auto imageView : _imageViews) {
+    for (auto imageView : _imageViews)
+    {
         vkDestroyImageView(_device.logical(), imageView, nullptr);
     }
 }
@@ -163,8 +162,9 @@ SwapChain::SwapChain(const Device &device, const Window &window) : _device(devic
 
 SwapChain::~SwapChain()
 {
-    // Destroy the swapchain
-    vkDestroySwapchainKHR(_device.logical(), _swapChain, nullptr);
+    if (_swapChain != VK_NULL_HANDLE)
+        // Destroy the swapchain
+        vkDestroySwapchainKHR(_device.logical(), _swapChain, nullptr);
 }
 
 SwapChainSupportDetails SwapChain::QuerySwapChainSupport(const VkPhysicalDevice &device, const VkSurfaceKHR &surface)
@@ -213,5 +213,23 @@ VkExtent2D SwapChain::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilit
         actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
         return actualExtent;
+    }
+}
+
+void SwapChain::recreate()
+{
+    destroyImageViews();
+    cleanupOld();
+    _oldSwapChain = _swapChain;
+    createSwapChain();
+    createImageViews();
+}
+
+void SwapChain::cleanupOld()
+{ // Destroy old swap chain if it exists
+    if (_oldSwapChain != VK_NULL_HANDLE)
+    {
+        vkDestroySwapchainKHR(_device.logical(), _oldSwapChain, nullptr);
+        _oldSwapChain = VK_NULL_HANDLE;
     }
 }

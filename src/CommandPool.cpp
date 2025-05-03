@@ -22,7 +22,7 @@ CommandPool::CommandPool(const Device &device,
 
     if (vkCreateCommandPool(_device.logical(), &poolInfo, nullptr, &_pool) != VK_SUCCESS)
         throw std::runtime_error("failed to create command pool!");
-    
+
     createCommandBuffers();
 }
 
@@ -96,6 +96,7 @@ void CommandPool::recordCommandBuffer(uint32_t index)
 
 void CommandPool::createCommandBuffers()
 {
+    // Allow only as many commandbffers as there are frames in the render pass
     _commandBuffers.resize(_renderPass.size());
 
     VkCommandBufferAllocateInfo allocInfo{};

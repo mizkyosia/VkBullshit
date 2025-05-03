@@ -3,8 +3,6 @@
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
-const int MAX_FRAMES_IN_FLIGHT = 5;
-
 Application::Application(bool enableValidationLayers) : window("Test", {WIDTH, HEIGHT}, "Vulkan", enableValidationLayers),
                                                         debugMessenger(window),
                                                         device(window),
@@ -92,6 +90,5 @@ void Application::mainLoop()
     window.setDrawFrameFunc([this](bool &framebufferResized)
                             { drawFrame(framebufferResized); });
 
-    window.mainLoop();
-    vkDeviceWaitIdle(device.logical());
+    window.mainLoop(device);
 }
