@@ -18,7 +18,7 @@ protected:
     const Device &_device;
     const SwapChain &_swapChain;
 
-    virtual void createRenderPass();
+    virtual void createRenderPass() = 0;
     void createFrameBuffers();
 
     void destroyFrameBuffers();

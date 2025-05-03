@@ -10,3 +10,6 @@ target_sources(VkBullshit PRIVATE
     CommandPool.cpp
     Sync.cpp
 )
+
+add_subdirectory(default)
+add_subdirectory(ui)

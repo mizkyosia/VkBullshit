@@ -10,6 +10,7 @@ target_compile_options(VkBullshit PRIVATE -Wall)
 
 # Add ImGui library
 add_subdirectory(lib/ImGui)
+target_include_directories(VkBullshit PRIVATE lib/ImGui)
 
 # Find libraries
 find_package(Vulkan REQUIRED)

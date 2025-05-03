@@ -6,9 +6,10 @@
 #include <Messenger.hpp>
 #include <SwapChain.hpp>
 #include <GraphicsPipeline.hpp>
-#include <RenderPass.hpp>
 #include <CommandPool.hpp>
 #include <Sync.hpp>
+
+#include <default/DefaultRenderPass.hpp>
 
 class Application
 {
@@ -17,7 +18,7 @@ private:
     Messenger debugMessenger;
     Device device;
     SwapChain swapChain;
-    RenderPass defaultRenderPass;
+    DefaultRenderPass defaultRenderPass;
     GraphicsPipeline graphicsPipeline;
     CommandPool commandPool;
     Sync sync;

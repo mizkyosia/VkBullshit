@@ -3,6 +3,8 @@
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
+const int MAX_FRAMES_IN_FLIGHT = 5;
+
 Application::Application(bool enableValidationLayers) : window("Test", {WIDTH, HEIGHT}, "Vulkan", enableValidationLayers),
                                                         debugMessenger(window),
                                                         device(window),
@@ -21,10 +23,28 @@ void Application::drawFrame(bool &resized)
 
     // Acquire image for current frame in swapchain. Disables the timeout by putting a very high value
     uint32_t imageIndex;
-    vkAcquireNextImageKHR(device.logical(), swapChain.handle(), UINT64_MAX, sync.imageAvailable(currentFrame), VK_NULL_HANDLE, &imageIndex);
+    auto result = vkAcquireNextImageKHR(device.logical(), swapChain.handle(), UINT64_MAX, sync.imageAvailable(currentFrame), VK_NULL_HANDLE, &imageIndex);
+
+    // Create new swap chain if needed
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+        recreateSwapChain(resized);
+        return;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+        throw std::runtime_error("Failed to acquire swapchain image");
+
+    // Wait for image in flight
+    if (sync.imageInFlight(imageIndex) != VK_NULL_HANDLE)
+        vkWaitForFences(device.logical(), 1, &sync.imageInFlight(imageIndex),
+                        VK_TRUE, UINT64_MAX);
+
+    // Update semaphores
+    sync.imageInFlight(imageIndex) = sync.inFlightFence(currentFrame);
 
     // Reset the current command buffer, so that it may be used again
     vkResetCommandBuffer(commandPool.command(currentFrame), 0);
+
     // Re-record the command buffer for the current frame/image
     commandPool.recordCommandBuffer(currentFrame);
 
@@ -65,17 +85,23 @@ void Application::drawFrame(bool &resized)
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
-    // Simpli not used
+    // Simply not used
     presentInfo.pResults = nullptr;
 
     // Finally, try to present queue
-    vkQueuePresentKHR(device.presentQueue(), &presentInfo);
+    result = vkQueuePresentKHR(device.presentQueue(), &presentInfo);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || resized)
+    {
+        recreateSwapChain(resized);
+        resized = false;
+    }
+    else if (result != VK_SUCCESS)
+    {
+        throw std::runtime_error("Failed to present swap chain image");
+    }
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-}
-
-void Application::recreateSwapChain(bool &resized)
-{
 }
 
 void Application::run()
@@ -91,4 +117,29 @@ void Application::mainLoop()
                             { drawFrame(framebufferResized); });
 
     window.mainLoop(device);
+}
+
+void Application::recreateSwapChain(bool &resized)
+{
+    resized = true;
+
+    glm::ivec2 size;
+    window.framebufferSize(size);
+    while (size[0] == 0 || size[1] == 0)
+    {
+        window.framebufferSize(size);
+        glfwWaitEvents();
+    }
+
+    vkDeviceWaitIdle(device.logical());
+
+    swapChain.recreate();
+    defaultRenderPass.recreate();
+    graphicsPipeline.recreate();
+    commandPool.recreateCommandBuffers();
+
+    // interface.recreate();
+
+    defaultRenderPass.cleanupOld();
+    swapChain.cleanupOld();
 }
