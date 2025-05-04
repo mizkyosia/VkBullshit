@@ -14,11 +14,9 @@ void UIRenderPass::createRenderPass()
     VkAttachmentDescription attachmentDescription = {};
     attachmentDescription.format = _swapChain.imageFormat();
     attachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;
-    attachmentDescription.loadOp =
-        VK_ATTACHMENT_LOAD_OP_DONT_CARE; // Need UI to be drawn on top of main
+    attachmentDescription.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE; // Need UI to be drawn on top of main
     attachmentDescription.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    attachmentDescription.finalLayout =
-        VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // Last pass so we want to present after
+    attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // Last pass so we want to present after
     attachmentDescription.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     attachmentDescription.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     attachmentDescription.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;

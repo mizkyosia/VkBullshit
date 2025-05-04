@@ -42,3 +42,39 @@ void CommandPool::destroyCommandBuffers()
 }
 
 void CommandPool::recordCommandBuffer(uint32_t index) {}
+
+void CommandPool::SingleTimeCommands(const Device &device, VkCommandPool &pool, const std::function<void(const VkCommandBuffer &)> &func)
+{
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = pool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer = {};
+    if (vkAllocateCommandBuffers(device.logical(), &allocInfo, &commandBuffer) !=
+        VK_SUCCESS)
+        throw std::runtime_error("failed to allocate command buffers!");
+
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+        throw std::runtime_error("Could not create one-time command buffer!");
+
+    func(commandBuffer);
+
+    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+        throw std::runtime_error("failed to record command buffer!");
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(device.graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(device.graphicsQueue());
+
+    vkFreeCommandBuffers(device.logical(), pool, 1, &commandBuffer);
+}

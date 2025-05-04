@@ -31,10 +31,11 @@ void UICommandPool::recordCommandBuffer(uint32_t index)
     renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassBeginInfo.renderPass = _renderPass.handle();
     renderPassBeginInfo.framebuffer = _renderPass.frameBuffer(index);
-    renderPassBeginInfo.renderArea.extent.width = _swapChain.extent().width;
-    renderPassBeginInfo.renderArea.extent.height = _swapChain.extent().height;
+    renderPassBeginInfo.renderArea.extent = _swapChain.extent();
     renderPassBeginInfo.clearValueCount = 1;
     renderPassBeginInfo.pClearValues = &clearColor;
+
+    std::cout << "Begin ImGui render pass\n";
 
     vkCmdBeginRenderPass(_commandBuffers[index], &renderPassBeginInfo,
                          VK_SUBPASS_CONTENTS_INLINE);

@@ -45,7 +45,7 @@ void Application::drawFrame(bool &resized)
 
     // Reset the current command buffers, so that they may be used again
     vkResetCommandBuffer(commandPool.command(currentFrame), 0);
-    vkResetCommandBuffer(interface.command(currentFrame), 0);
+    // vkResetCommandBuffer(interface.command(currentFrame), 0);
 
     // Re-record the command buffers for the current frame/image
     interface.recordCommandBuffers(currentFrame);
@@ -143,7 +143,7 @@ void Application::recreateSwapChain(bool &resized)
     graphicsPipeline.recreate();
     commandPool.recreateCommandBuffers();
 
-    // interface.recreate();
+    interface.recreate();
 
     defaultRenderPass.cleanupOld();
     swapChain.cleanupOld();

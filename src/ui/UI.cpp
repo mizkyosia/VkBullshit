@@ -33,9 +33,9 @@ void UI::recreate()
 {
     _renderPass.recreate();
     _commandPool.recreateCommandBuffers();
-
     _renderPass.cleanupOld();
 };
+
 UI::UI(const Window &window, const Device &device, const SwapChain &swapChain, const GraphicsPipeline &graphicsPipeline) : _window(window),
                                                                                                                            _device(device),
                                                                                                                            _swapChain(swapChain),

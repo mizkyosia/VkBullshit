@@ -32,11 +32,13 @@ public:
 
     void recreateCommandBuffers();
     /// @brief Records command buffer at given index. For fixed geometry, no need to re-record multiple times.
-    /// @param index 
+    /// @param index
     virtual void recordCommandBuffer(uint32_t index);
 
     // Getters
     inline const VkCommandPool &pool() const { return _pool; };
     inline VkCommandBuffer &command(uint32_t index) { return _commandBuffers[index]; }
     inline const VkCommandBuffer &command(uint32_t index) const { return _commandBuffers[index]; }
+
+    static void SingleTimeCommands(const Device &device, VkCommandPool &pool, const std::function<void(const VkCommandBuffer &)> &func);
 };
