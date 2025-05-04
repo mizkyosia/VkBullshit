@@ -9,7 +9,9 @@
 #include <Sync.hpp>
 
 #include <default/DefaultRenderPass.hpp>
-#include <default/DefaultCommandPool.hpp>
+#include <default/BaseRenderer.hpp>
+
+#include <geometry/Vertex.hpp>
 
 #include <ui/UI.hpp>
 
@@ -22,7 +24,7 @@ private:
     SwapChain swapChain;
     DefaultRenderPass defaultRenderPass;
     GraphicsPipeline graphicsPipeline;
-    DefaultCommandPool commandPool;
+    BaseRenderer renderer;
     Sync sync;
 
     UI interface;
@@ -34,9 +36,10 @@ private:
     void drawFrame(bool &resized);
 
     void recreateSwapChain(bool &resized);
-    
+
 public:
     Application(bool enableValidationLayers);
+    ~Application();
 
     void run();
 };

@@ -1,11 +1,11 @@
-#include <CommandPool.hpp>
+#include <Renderer.hpp>
 #include <SwapChain.hpp>
 #include <Device.hpp>
 #include <RenderPass.hpp>
 #include <GraphicsPipeline.hpp>
 #include <QueueFamily.hpp>
 
-CommandPool::CommandPool(const Device &device,
+Renderer::Renderer(const Device &device,
                          const RenderPass &renderPass,
                          const SwapChain &swapChain,
                          const GraphicsPipeline &graphicsPipeline,
@@ -24,26 +24,26 @@ CommandPool::CommandPool(const Device &device,
         throw std::runtime_error("failed to create command pool!");
 }
 
-CommandPool::~CommandPool()
+Renderer::~Renderer()
 {
     destroyCommandBuffers();
     vkDestroyCommandPool(_device.logical(), _pool, nullptr);
 }
 
-void CommandPool::recreateCommandBuffers()
+void Renderer::recreateCommandBuffers()
 {
     destroyCommandBuffers();
     createCommandBuffers();
 }
 
-void CommandPool::destroyCommandBuffers()
+void Renderer::destroyCommandBuffers()
 {
     vkFreeCommandBuffers(_device.logical(), _pool, _commandBuffers.size(), _commandBuffers.data());
 }
 
-void CommandPool::recordCommandBuffer(uint32_t index) {}
+void Renderer::recordCommandBuffer(uint32_t index) {}
 
-void CommandPool::SingleTimeCommands(const Device &device, VkCommandPool &pool, const std::function<void(const VkCommandBuffer &)> &func)
+void Renderer::SingleTimeCommands(const Device &device, VkCommandPool &pool, const std::function<void(const VkCommandBuffer &)> &func)
 {
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

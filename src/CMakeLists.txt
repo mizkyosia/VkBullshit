@@ -7,9 +7,10 @@ target_sources(VkBullshit PRIVATE
     SwapChain.cpp
     GraphicsPipeline.cpp
     RenderPass.cpp
-    CommandPool.cpp
+    Renderer.cpp
     Sync.cpp
 )
 
 add_subdirectory(default)
 add_subdirectory(ui)
+add_subdirectory(geometry)

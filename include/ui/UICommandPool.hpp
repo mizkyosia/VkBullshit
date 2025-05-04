@@ -1,9 +1,9 @@
 #pragma once
 #include "global.hpp"
 
-#include <CommandPool.hpp>
+#include <Renderer.hpp>
 
-class UICommandPool : public CommandPool
+class UICommandPool : public Renderer
 {
 private:
     void createCommandBuffers() override;

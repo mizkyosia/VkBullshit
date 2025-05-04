@@ -5,13 +5,18 @@ const uint32_t HEIGHT = 600;
 
 const int MAX_FRAMES_IN_FLIGHT = 5;
 
+const std::vector<Vertex> testVertices = {
+    {{0.0f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}},
+    {{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+    {{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}}};
+
 Application::Application(bool enableValidationLayers) : window("Test", {WIDTH, HEIGHT}, "Vulkan", enableValidationLayers),
                                                         debugMessenger(window),
                                                         device(window),
                                                         swapChain(device, window),
                                                         defaultRenderPass(device, swapChain),
                                                         graphicsPipeline(device, swapChain, defaultRenderPass, {ShaderInfo("base", true), ShaderInfo("base", false)}),
-                                                        commandPool(device, defaultRenderPass, swapChain, graphicsPipeline, 0),
+                                                        renderer(device, defaultRenderPass, swapChain, graphicsPipeline, 0, testVertices),
                                                         sync(device, swapChain.numImages(), MAX_FRAMES_IN_FLIGHT),
                                                         interface(window, device, swapChain, graphicsPipeline)
 {
@@ -44,12 +49,12 @@ void Application::drawFrame(bool &resized)
     sync.imageInFlight(imageIndex) = sync.inFlightFence(currentFrame);
 
     // Reset the current command buffers, so that they may be used again
-    vkResetCommandBuffer(commandPool.command(currentFrame), 0);
-    // vkResetCommandBuffer(interface.command(currentFrame), 0);
+    vkResetCommandBuffer(renderer.command(currentFrame), 0);
+    vkResetCommandBuffer(interface.command(currentFrame), 0);
 
     // Re-record the command buffers for the current frame/image
     interface.recordCommandBuffers(currentFrame);
-    commandPool.recordCommandBuffer(currentFrame);
+    renderer.recordCommandBuffer(currentFrame);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -61,7 +66,7 @@ void Application::drawFrame(bool &resized)
     submitInfo.pWaitDstStageMask = waitStages;
 
     // Set command buffers to give (UI + simulation)
-    VkCommandBuffer buffers[] = {commandPool.command(currentFrame), interface.command(currentFrame)};
+    VkCommandBuffer buffers[] = {renderer.command(currentFrame), interface.command(currentFrame)};
     submitInfo.commandBufferCount = 2;
     submitInfo.pCommandBuffers = buffers;
 
@@ -107,6 +112,10 @@ void Application::drawFrame(bool &resized)
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
+Application::~Application()
+{
+}
+
 void Application::run()
 {
     std::cout << "Application started !\n";
@@ -141,7 +150,7 @@ void Application::recreateSwapChain(bool &resized)
     swapChain.recreate();
     defaultRenderPass.recreate();
     graphicsPipeline.recreate();
-    commandPool.recreateCommandBuffers();
+    renderer.recreateCommandBuffers();
 
     interface.recreate();
 

@@ -10,7 +10,7 @@ class RenderPass;
 class SwapChain;
 class GraphicsPipeline;
 
-class CommandPool
+class Renderer
 {
 protected:
     std::vector<VkCommandBuffer> _commandBuffers;
@@ -27,8 +27,8 @@ protected:
     void destroyCommandBuffers();
 
 public:
-    CommandPool(const Device &device, const RenderPass &renderPass, const SwapChain &swapChain, const GraphicsPipeline &graphicsPipeline, const VkCommandPoolCreateFlags &flags);
-    ~CommandPool();
+    Renderer(const Device &device, const RenderPass &renderPass, const SwapChain &swapChain, const GraphicsPipeline &graphicsPipeline, const VkCommandPoolCreateFlags &flags);
+    ~Renderer();
 
     void recreateCommandBuffers();
     /// @brief Records command buffer at given index. For fixed geometry, no need to re-record multiple times.

@@ -9,7 +9,7 @@
 #include <SwapChain.hpp>
 #include <GraphicsPipeline.hpp>
 
-UICommandPool::UICommandPool(const Device &device, const RenderPass &renderPass, const SwapChain &swapChain, const GraphicsPipeline &graphicsPipeline, const VkCommandPoolCreateFlags &flags) : CommandPool(device, renderPass, swapChain, graphicsPipeline, flags)
+UICommandPool::UICommandPool(const Device &device, const RenderPass &renderPass, const SwapChain &swapChain, const GraphicsPipeline &graphicsPipeline, const VkCommandPoolCreateFlags &flags) : Renderer(device, renderPass, swapChain, graphicsPipeline, flags)
 {
     createCommandBuffers();
 }
@@ -26,7 +26,7 @@ void UICommandPool::recordCommandBuffer(uint32_t index)
         throw std::runtime_error("Unable to start recording UI command buffer!");
     }
 
-    VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f};
+    VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 0.5f};
     VkRenderPassBeginInfo renderPassBeginInfo = {};
     renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassBeginInfo.renderPass = _renderPass.handle();
@@ -34,8 +34,6 @@ void UICommandPool::recordCommandBuffer(uint32_t index)
     renderPassBeginInfo.renderArea.extent = _swapChain.extent();
     renderPassBeginInfo.clearValueCount = 1;
     renderPassBeginInfo.pClearValues = &clearColor;
-
-    std::cout << "Begin ImGui render pass\n";
 
     vkCmdBeginRenderPass(_commandBuffers[index], &renderPassBeginInfo,
                          VK_SUBPASS_CONTENTS_INLINE);
