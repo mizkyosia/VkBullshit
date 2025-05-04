@@ -12,7 +12,8 @@ Application::Application(bool enableValidationLayers) : window("Test", {WIDTH, H
                                                         defaultRenderPass(device, swapChain),
                                                         graphicsPipeline(device, swapChain, defaultRenderPass, {ShaderInfo("base", true), ShaderInfo("base", false)}),
                                                         commandPool(device, defaultRenderPass, swapChain, graphicsPipeline, 0),
-                                                        sync(device, swapChain.numImages(), MAX_FRAMES_IN_FLIGHT)
+                                                        sync(device, swapChain.numImages(), MAX_FRAMES_IN_FLIGHT),
+                                                        interface(window, device, swapChain, graphicsPipeline)
 {
 }
 
@@ -42,10 +43,12 @@ void Application::drawFrame(bool &resized)
     // Update semaphores
     sync.imageInFlight(imageIndex) = sync.inFlightFence(currentFrame);
 
-    // Reset the current command buffer, so that it may be used again
+    // Reset the current command buffers, so that they may be used again
     vkResetCommandBuffer(commandPool.command(currentFrame), 0);
+    vkResetCommandBuffer(interface.command(currentFrame), 0);
 
-    // Re-record the command buffer for the current frame/image
+    // Re-record the command buffers for the current frame/image
+    interface.recordCommandBuffers(currentFrame);
     commandPool.recordCommandBuffer(currentFrame);
 
     VkSubmitInfo submitInfo{};
@@ -57,9 +60,9 @@ void Application::drawFrame(bool &resized)
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
 
-    // Set command buffers to give
-    VkCommandBuffer buffers[] = {commandPool.command(currentFrame)};
-    submitInfo.commandBufferCount = 1;
+    // Set command buffers to give (UI + simulation)
+    VkCommandBuffer buffers[] = {commandPool.command(currentFrame), interface.command(currentFrame)};
+    submitInfo.commandBufferCount = 2;
     submitInfo.pCommandBuffers = buffers;
 
     // Setup waiting semaphores
@@ -114,7 +117,9 @@ void Application::run()
 void Application::mainLoop()
 {
     window.setDrawFrameFunc([this](bool &framebufferResized)
-                            { drawFrame(framebufferResized); });
+                            {
+                                interface.draw();
+                                drawFrame(framebufferResized); });
 
     window.mainLoop(device);
 }

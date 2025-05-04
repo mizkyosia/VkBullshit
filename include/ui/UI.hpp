@@ -7,11 +7,11 @@
 
 #include <Window.hpp>
 #include <Device.hpp>
-#include <CommandPool.hpp>
 #include <SwapChain.hpp>
 #include <GraphicsPipeline.hpp>
 
 #include <ui/UIRenderPass.hpp>
+#include <ui/UICommandPool.hpp>
 
 class UI
 {
@@ -22,7 +22,7 @@ private:
     const GraphicsPipeline &_graphicsPipeline;
 
     UIRenderPass _renderPass;
-    CommandPool _commandPool;
+    UICommandPool _commandPool;
     VkDescriptorPool _imGuiDescriptorPool;
 
     void createImGuiDescriptorPool();
@@ -36,4 +36,6 @@ public:
     void recordCommandBuffers(uint32_t bufferIdx) { _commandPool.recordCommandBuffer(bufferIdx); }
 
     void recreate();
+
+    void draw();
 };

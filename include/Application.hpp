@@ -6,10 +6,12 @@
 #include <Messenger.hpp>
 #include <SwapChain.hpp>
 #include <GraphicsPipeline.hpp>
-#include <CommandPool.hpp>
 #include <Sync.hpp>
 
 #include <default/DefaultRenderPass.hpp>
+#include <default/DefaultCommandPool.hpp>
+
+#include <ui/UI.hpp>
 
 class Application
 {
@@ -20,8 +22,10 @@ private:
     SwapChain swapChain;
     DefaultRenderPass defaultRenderPass;
     GraphicsPipeline graphicsPipeline;
-    CommandPool commandPool;
+    DefaultCommandPool commandPool;
     Sync sync;
+
+    UI interface;
 
     size_t currentFrame = 0;
 

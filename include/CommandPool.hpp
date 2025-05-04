@@ -12,7 +12,7 @@ class GraphicsPipeline;
 
 class CommandPool
 {
-private:
+protected:
     std::vector<VkCommandBuffer> _commandBuffers;
 
     VkCommandPool _pool;
@@ -23,14 +23,16 @@ private:
     const SwapChain &_swapChain;
     const GraphicsPipeline &_graphicsPipeline;
 
-    virtual void createCommandBuffers();
+    virtual void createCommandBuffers() = 0;
     void destroyCommandBuffers();
 
 public:
     CommandPool(const Device &device, const RenderPass &renderPass, const SwapChain &swapChain, const GraphicsPipeline &graphicsPipeline, const VkCommandPoolCreateFlags &flags);
     ~CommandPool();
 
-    virtual void recreateCommandBuffers();
+    void recreateCommandBuffers();
+    /// @brief Records command buffer at given index. For fixed geometry, no need to re-record multiple times.
+    /// @param index 
     virtual void recordCommandBuffer(uint32_t index);
 
     // Getters
